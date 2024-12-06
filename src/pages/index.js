@@ -1,171 +1,121 @@
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
 import styles from "../styles/Home.module.css";
+import { useRouter } from "next/router";
 
 export default function Home() {
-    const [pizzas, setPizzas] = useState([]);
-    const [newPizzaName, setNewPizzaName] = useState("");
-    const [unsavedPizzas, setUnsavedPizzas] = useState([]);
     const router = useRouter();
 
+    const [pizzas, setPizzas] = useState([]);
+    const [unsavedPizzas, setUnsavedPizzas] = useState([]);
+    const [newPizzaName, setNewPizzaName] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    // Fetch pizzas from Supabase
     useEffect(() => {
+        const fetchPizzas = async () => {
+            const { data, error } = await supabase.from("pizzas").select();
+            if (error) {
+                console.error("Error fetching pizzas:", error.message);
+            } else {
+                setPizzas(data);
+            }
+        };
+
         fetchPizzas();
     }, []);
 
-    const fetchPizzas = async () => {
-        const { data, error } = await supabase.from("pizzas").select("id, name");
-        if (error) {
-            console.error("Error fetching pizzas:", error);
-        } else {
-            setPizzas(data || []);
-        }
-    };
-
-    const addPizzaLocally = () => {
-        if (!newPizzaName.trim()) return;
-
-        const duplicate = [...pizzas, ...unsavedPizzas].some(
-            (pizza) => pizza.name.toLowerCase() === newPizzaName.trim().toLowerCase()
-        );
-
-        if (duplicate) {
-            alert("Pizza with this name already exists!");
+    // Add unsaved pizza
+    const addUnsavedPizza = () => {
+        if (!newPizzaName.trim()) {
+            alert("Pizza name cannot be empty!");
             return;
         }
-
-        setUnsavedPizzas((prevUnsavedPizzas) => [
-            ...prevUnsavedPizzas,
-            { id: Date.now(), name: newPizzaName.trim(), isUnsaved: true },
+        if (
+            pizzas.some((pizza) => pizza.name === newPizzaName) ||
+            unsavedPizzas.some((pizza) => pizza.name === newPizzaName)
+        ) {
+            alert("Pizza name must be unique!");
+            return;
+        }
+        setUnsavedPizzas([
+            ...unsavedPizzas,
+            { id: Date.now().toString(), name: newPizzaName },
         ]);
         setNewPizzaName("");
     };
 
-    const savePizzasToDatabase = async () => {
-        if (unsavedPizzas.length === 0) {
-            alert("No pizzas to save.");
-            return;
-        }
+    // Save all pizzas to Supabase
+    const saveAllPizzas = async () => {
+        setLoading(true);
 
-        const { error } = await supabase.from("pizzas").insert(
-            unsavedPizzas.map((pizza) => ({ name: pizza.name }))
-        );
-
+        const { error } = await supabase.from("pizzas").insert(unsavedPizzas);
         if (error) {
-            console.error("Error saving pizzas:", error);
-            alert("Failed to save pizzas. Please try again.");
+            console.error("Error saving pizzas:", error.message);
         } else {
-            setUnsavedPizzas([]); // Clear the unsaved pizzas
+            setPizzas([...pizzas, ...unsavedPizzas]);
+            setUnsavedPizzas([]);
             alert("Pizzas saved successfully!");
-            fetchPizzas(); // Refresh the list of pizzas
         }
+
+        setLoading(false);
     };
 
-    const deletePizza = async (id, isUnsaved = false) => {
+    // Delete a pizza
+    const deletePizza = async (id, isUnsaved) => {
         if (isUnsaved) {
-            // Remove unsaved pizza
-            setUnsavedPizzas((prevUnsavedPizzas) =>
-                prevUnsavedPizzas.filter((pizza) => pizza.id !== id)
-            );
+            setUnsavedPizzas(unsavedPizzas.filter((pizza) => pizza.id !== id));
         } else {
-            // Delete from database
             const { error } = await supabase.from("pizzas").delete().eq("id", id);
             if (error) {
-                console.error("Error deleting pizza:", error);
+                console.error("Error deleting pizza:", error.message);
             } else {
-                fetchPizzas(); // Refresh the list of pizzas
+                setPizzas(pizzas.filter((pizza) => pizza.id !== id));
             }
-        }
-    };
-
-    const navigateToPizza = (pizza) => {
-        if (pizza.isUnsaved) {
-            alert(
-                "This pizza is not yet saved to the database. Please save it before managing."
-            );
-        } else {
-            router.push(`/pizza/${pizza.id}`);
         }
     };
 
     return (
         <div className={styles.container}>
-            <h1>Manage Pizzas</h1>
-
-            {/* Add Pizza Locally */}
+            <h1>Manage Pizza</h1>
             <div className={styles.addPizzaContainer}>
                 <input
                     type="text"
-                    placeholder="Enter pizza name"
+                    placeholder="Pizza Name"
                     value={newPizzaName}
                     onChange={(e) => setNewPizzaName(e.target.value)}
                     className={styles.input}
                 />
-                <button onClick={addPizzaLocally} className={styles.addButton}>
-                    Add Pizza Locally
+                <button onClick={addUnsavedPizza} className={styles.addButton}>
+                    Add Pizza
                 </button>
             </div>
 
-            {/* Save Pizzas to Database */}
-            <button
-                onClick={savePizzasToDatabase}
-                className={styles.saveButton}
-                disabled={unsavedPizzas.length === 0}
-            >
-                Save All
-            </button>
-
-            {/* List of Existing Pizzas */}
-            <h2>Existing Pizzas</h2>
+            <h2>Pizza List</h2>
             <ul className={styles.pizzaList}>
                 {pizzas.map((pizza) => (
                     <li key={pizza.id} className={styles.pizzaItem}>
-                        <div className={styles.pizzaDetails}>
-                            <strong>{pizza.name}</strong>
-                        </div>
-                        <button
-                            onClick={() => navigateToPizza(pizza)}
-                            className={styles.manageButton}
-                        >
-                            Manage
-                        </button>
-                        <button
-                            onClick={() => deletePizza(pizza.id)}
-                            className={styles.deleteButton}
-                        >
-                            Delete
-                        </button>
+            <span onClick={() => router.push(`/pizza/${pizza.id}`)}>
+              {pizza.name}
+            </span>
+                        <button onClick={() => deletePizza(pizza.id, false)}>Delete</button>
+                    </li>
+                ))}
+                {unsavedPizzas.map((pizza) => (
+                    <li key={pizza.id} className={styles.pizzaItem}>
+                        <span>{pizza.name}</span>
+                        <button onClick={() => deletePizza(pizza.id, true)}>Delete</button>
                     </li>
                 ))}
             </ul>
 
-            {/* Unsaved Pizzas */}
-            {unsavedPizzas.length > 0 && (
-                <>
-                    <h2>Unsaved Pizzas</h2>
-                    <ul className={styles.pizzaList}>
-                        {unsavedPizzas.map((pizza) => (
-                            <li key={pizza.id} className={styles.pizzaItem}>
-                                <div className={styles.pizzaDetails}>
-                                    <strong>{pizza.name}</strong>
-                                </div>
-                                <button
-                                    onClick={() => navigateToPizza(pizza)}
-                                    className={styles.manageButton}
-                                >
-                                    Manage
-                                </button>
-                                <button
-                                    onClick={() => deletePizza(pizza.id, true)}
-                                    className={styles.deleteButton}
-                                >
-                                    Delete
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </>
-            )}
+            <button
+                onClick={saveAllPizzas}
+                className={styles.saveButton}
+                disabled={loading || unsavedPizzas.length === 0}
+            >
+                {loading ? "Saving..." : "Save All"}
+            </button>
         </div>
     );
 }

@@ -7,7 +7,6 @@ export default function PizzaPage() {
     const router = useRouter();
     const { id } = router.query;
 
-    // Predefined list of available toppings
     const availableToppings = [
         "Pepperoni",
         "Mushrooms",
@@ -17,70 +16,67 @@ export default function PizzaPage() {
         "Extra Cheese",
     ];
 
-    // State to manage selected toppings
+    const [pizzaName, setPizzaName] = useState("");
     const [selectedToppings, setSelectedToppings] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Fetch selected toppings for the pizza from Supabase
+    // Fetch pizza name and toppings from Supabase
     useEffect(() => {
-        const fetchToppings = async () => {
+        const fetchPizzaDetails = async () => {
             if (!id) return;
 
-            setLoading(true);
-            const { data, error } = await supabase
+            const { data: pizza, error: pizzaError } = await supabase
+                .from("pizzas")
+                .select("name")
+                .eq("id", id)
+                .single();
+
+            if (pizzaError) {
+                console.error("Error fetching pizza:", pizzaError.message);
+                return;
+            }
+            setPizzaName(pizza.name);
+
+            const { data: toppings, error: toppingsError } = await supabase
                 .from("pizza_toppings")
                 .select("topping")
                 .eq("pizza_id", id);
 
-            if (error) {
-                console.error("Error fetching toppings:", error.message);
-            } else if (data) {
-                setSelectedToppings(data.map((item) => item.topping));
+            if (toppingsError) {
+                console.error("Error fetching toppings:", toppingsError.message);
+                return;
             }
-            setLoading(false);
+            setSelectedToppings(toppings.map((item) => item.topping));
         };
 
-        fetchToppings();
+        fetchPizzaDetails();
     }, [id]);
 
     // Toggle topping selection
     const toggleTopping = (topping) => {
-        if (selectedToppings.includes(topping)) {
-            setSelectedToppings(selectedToppings.filter((item) => item !== topping));
-        } else {
-            setSelectedToppings([...selectedToppings, topping]);
-        }
+        setSelectedToppings((prev) =>
+            prev.includes(topping)
+                ? prev.filter((item) => item !== topping)
+                : [...prev, topping]
+        );
     };
 
-    // Save toppings to Supabase
+    // Save toppings
     const saveToppings = async () => {
         if (!id) return;
 
         setLoading(true);
+        await supabase.from("pizza_toppings").delete().eq("pizza_id", id);
 
-        // Delete existing toppings for this pizza
-        const { error: deleteError } = await supabase
-            .from("pizza_toppings")
-            .delete()
-            .eq("pizza_id", id);
+        const { error } = await supabase.from("pizza_toppings").insert(
+            selectedToppings.map((topping) => ({
+                pizza_id: id,
+                topping,
+            }))
+        );
 
-        if (deleteError) {
-            console.error("Error deleting old toppings:", deleteError.message);
-            setLoading(false);
-            return;
-        }
-
-        // Insert updated toppings
-        const newToppings = selectedToppings.map((topping) => ({
-            pizza_id: id,
-            topping,
-        }));
-        const { error: insertError } = await supabase
-            .from("pizza_toppings")
-            .insert(newToppings);
-
-        if (insertError) {
-            console.error("Error saving toppings:", insertError.message);
+        if (error) {
+            console.error("Error saving toppings:", error.message);
         } else {
             alert("Toppings saved successfully!");
         }
@@ -90,7 +86,7 @@ export default function PizzaPage() {
 
     return (
         <div className={styles.container}>
-            <h1>Pizza: {id}</h1>
+            <h1>Pizza: {pizzaName}</h1>
 
             <h2>Available Toppings</h2>
             <ul className={styles.toppingList}>
@@ -109,17 +105,13 @@ export default function PizzaPage() {
             </ul>
 
             <h2>Selected Toppings</h2>
-            {selectedToppings.length > 0 ? (
-                <ul className={styles.selectedToppingList}>
-                    {selectedToppings.map((topping) => (
-                        <li key={topping} className={styles.selectedToppingItem}>
-                            {topping}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No toppings selected.</p>
-            )}
+            <ul className={styles.selectedToppingList}>
+                {selectedToppings.map((topping) => (
+                    <li key={topping} className={styles.selectedToppingItem}>
+                        {topping}
+                    </li>
+                ))}
+            </ul>
 
             <button
                 onClick={saveToppings}
