@@ -25,7 +25,27 @@
 }
 
 .pizzaItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
-  cursor: pointer;
   border-bottom: 1px solid #ccc;
+}
+
+.pizzaDetails {
+  flex: 1;
+}
+
+.manageButton {
+  padding: 5px 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.deleteButton {
+  padding: 5px 10px;
+  cursor: pointer;
+  color: white;
+  background-color: red;
+  border: none;
 }
