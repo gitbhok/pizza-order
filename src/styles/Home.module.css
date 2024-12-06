@@ -1,22 +1,39 @@
 .container {
+  max-width: 600px;
+  margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .addPizzaContainer {
-  margin-bottom: 20px;
   display: flex;
   gap: 10px;
+  margin-bottom: 20px;
 }
 
 .input {
-  padding: 10px;
   flex: 1;
+  padding: 10px;
+  font-size: 16px;
 }
 
-.addButton {
-  padding: 10px 20px;
+.addButton,
+.saveButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
   cursor: pointer;
+}
+
+.addButton:hover,
+.saveButton:hover {
+  background-color: #005bb5;
+}
+
+.saveButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .pizzaList {
@@ -27,25 +44,28 @@
 .pizzaItem {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 10px;
   padding: 10px;
-  border-bottom: 1px solid #ccc;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .pizzaDetails {
   flex: 1;
 }
 
-.manageButton {
+.manageButton,
+.deleteButton {
+  margin-left: 10px;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 5px;
   padding: 5px 10px;
-  margin-right: 10px;
   cursor: pointer;
 }
 
-.deleteButton {
-  padding: 5px 10px;
-  cursor: pointer;
-  color: white;
-  background-color: red;
-  border: none;
+.manageButton:hover,
+.deleteButton:hover {
+  background-color: #c53030;
 }

@@ -1,67 +1,95 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabaseClient";
 import styles from "../../styles/Pizza.module.css";
 
 export default function PizzaPage() {
     const router = useRouter();
     const { id } = router.query;
 
-    // Predefined list of 6 available toppings
-    const availableToppings = [
-        "Pepperoni",
-        "Mushrooms",
-        "Onions",
-        "Sausage",
-        "Bacon",
-        "Extra Cheese",
-    ];
+    const [toppings, setToppings] = useState([]);
+    const [newTopping, setNewTopping] = useState("");
 
-    // State to manage selected toppings
-    const [selectedToppings, setSelectedToppings] = useState([]);
+    useEffect(() => {
+        if (id) fetchToppings();
+    }, [id]);
 
-    // Toggle topping selection
-    const toggleTopping = (topping) => {
-        if (selectedToppings.includes(topping)) {
-            setSelectedToppings(
-                selectedToppings.filter((item) => item !== topping)
-            );
+    const fetchToppings = async () => {
+        const { data, error } = await supabase
+            .from("toppings")
+            .select("id, name")
+            .eq("pizza_id", id);
+
+        if (error) {
+            console.error("Error fetching toppings:", error);
         } else {
-            setSelectedToppings([...selectedToppings, topping]);
+            setToppings(data || []);
+        }
+    };
+
+    const addTopping = async () => {
+        if (!newTopping.trim()) return;
+
+        // Prevent duplicates
+        const duplicate = toppings.some(
+            (topping) => topping.name.toLowerCase() === newTopping.trim().toLowerCase()
+        );
+        if (duplicate) {
+            alert("Topping already exists!");
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from("toppings")
+            .insert([{ name: newTopping.trim(), pizza_id: id }]);
+
+        if (error) {
+            console.error("Error adding topping:", error);
+        } else {
+            setToppings([...toppings, ...data]);
+            setNewTopping("");
+        }
+    };
+
+    const deleteTopping = async (toppingId) => {
+        const { error } = await supabase.from("toppings").delete().eq("id", toppingId);
+        if (error) {
+            console.error("Error deleting topping:", error);
+        } else {
+            setToppings(toppings.filter((topping) => topping.id !== toppingId));
         }
     };
 
     return (
         <div className={styles.container}>
-            <h1>Pizza: {id}</h1>
+            <h1>Manage Toppings</h1>
 
-            <h2>Available Toppings</h2>
+            <div className={styles.addToppingContainer}>
+                <input
+                    type="text"
+                    placeholder="Enter topping"
+                    value={newTopping}
+                    onChange={(e) => setNewTopping(e.target.value)}
+                    className={styles.input}
+                />
+                <button onClick={addTopping} className={styles.addButton}>
+                    Add Topping
+                </button>
+            </div>
+
             <ul className={styles.toppingList}>
-                {availableToppings.map((topping) => (
-                    <li key={topping} className={styles.toppingItem}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={selectedToppings.includes(topping)}
-                                onChange={() => toggleTopping(topping)}
-                            />
-                            {topping}
-                        </label>
+                {toppings.map((topping) => (
+                    <li key={topping.id} className={styles.toppingItem}>
+                        {topping.name}
+                        <button
+                            onClick={() => deleteTopping(topping.id)}
+                            className={styles.deleteButton}
+                        >
+                            Delete
+                        </button>
                     </li>
                 ))}
             </ul>
-
-            <h2>Selected Toppings</h2>
-            {selectedToppings.length > 0 ? (
-                <ul className={styles.selectedToppingList}>
-                    {selectedToppings.map((topping) => (
-                        <li key={topping} className={styles.selectedToppingItem}>
-                            {topping}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No toppings selected.</p>
-            )}
 
             <button onClick={() => router.push("/")} className={styles.backButton}>
                 Go Back
