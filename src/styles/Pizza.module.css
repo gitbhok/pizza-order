@@ -16,14 +16,32 @@
     border-bottom: 1px solid #ccc;
     display: flex;
     align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.toppingItem:hover,
+.selectedToppingItem:hover {
+    background-color: #f0f0f0;
 }
 
 .toppingItem label {
     cursor: pointer;
+    flex: 1;
 }
 
 .backButton {
     margin-top: 20px;
     padding: 10px 20px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.backButton:hover {
+    background-color: #005bb5;
 }
