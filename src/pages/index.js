@@ -7,7 +7,6 @@ export default function Home() {
     const router = useRouter();
 
     const [pizzas, setPizzas] = useState([]);
-    const [unsavedPizzas, setUnsavedPizzas] = useState([]);
     const [newPizzaName, setNewPizzaName] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -25,53 +24,44 @@ export default function Home() {
         fetchPizzas();
     }, []);
 
-    // Add unsaved pizza
-    const addUnsavedPizza = () => {
+    // Add a new pizza directly to Supabase
+    const addPizza = async () => {
         if (!newPizzaName.trim()) {
             alert("Pizza name cannot be empty!");
             return;
         }
-        if (
-            pizzas.some((pizza) => pizza.name === newPizzaName) ||
-            unsavedPizzas.some((pizza) => pizza.name === newPizzaName)
-        ) {
+
+        if (pizzas.some((pizza) => pizza.name === newPizzaName)) {
             alert("Pizza name must be unique!");
             return;
         }
-        setUnsavedPizzas([
-            ...unsavedPizzas,
-            { id: Date.now().toString(), name: newPizzaName },
-        ]);
-        setNewPizzaName("");
-    };
 
-    // Save all pizzas to Supabase
-    const saveAllPizzas = async () => {
         setLoading(true);
 
-        const { error } = await supabase.from("pizzas").insert(unsavedPizzas);
+        const { data, error } = await supabase
+            .from("pizzas")
+            .insert({ name: newPizzaName })
+            .select(); // Fetch inserted data immediately
+
         if (error) {
-            console.error("Error saving pizzas:", error.message);
-        } else {
-            setPizzas([...pizzas, ...unsavedPizzas]);
-            setUnsavedPizzas([]);
-            alert("Pizzas saved successfully!");
+            console.error("Error adding pizza:", error.message);
+            alert("Failed to add pizza. Please try again.");
+        } else if (data) {
+            setPizzas([...pizzas, ...data]); // Add the new pizza to the list
+            setNewPizzaName("");
         }
 
         setLoading(false);
     };
 
     // Delete a pizza
-    const deletePizza = async (id, isUnsaved) => {
-        if (isUnsaved) {
-            setUnsavedPizzas(unsavedPizzas.filter((pizza) => pizza.id !== id));
+    const deletePizza = async (id) => {
+        const { error } = await supabase.from("pizzas").delete().eq("id", id);
+        if (error) {
+            console.error("Error deleting pizza:", error.message);
+            alert("Failed to delete pizza. Please try again.");
         } else {
-            const { error } = await supabase.from("pizzas").delete().eq("id", id);
-            if (error) {
-                console.error("Error deleting pizza:", error.message);
-            } else {
-                setPizzas(pizzas.filter((pizza) => pizza.id !== id));
-            }
+            setPizzas(pizzas.filter((pizza) => pizza.id !== id));
         }
     };
 
@@ -86,8 +76,8 @@ export default function Home() {
                     onChange={(e) => setNewPizzaName(e.target.value)}
                     className={styles.input}
                 />
-                <button onClick={addUnsavedPizza} className={styles.addButton}>
-                    Add Pizza
+                <button onClick={addPizza} className={styles.addButton} disabled={loading}>
+                    {loading ? "Adding..." : "Add Pizza"}
                 </button>
             </div>
 
@@ -95,27 +85,22 @@ export default function Home() {
             <ul className={styles.pizzaList}>
                 {pizzas.map((pizza) => (
                     <li key={pizza.id} className={styles.pizzaItem}>
-            <span onClick={() => router.push(`/pizza/${pizza.id}`)}>
-              {pizza.name}
-            </span>
-                        <button onClick={() => deletePizza(pizza.id, false)}>Delete</button>
-                    </li>
-                ))}
-                {unsavedPizzas.map((pizza) => (
-                    <li key={pizza.id} className={styles.pizzaItem}>
                         <span>{pizza.name}</span>
-                        <button onClick={() => deletePizza(pizza.id, true)}>Delete</button>
+                        <button
+                            onClick={() => router.push(`/pizza/${pizza.id}`)}
+                            className={styles.manageButton}
+                        >
+                            Manage
+                        </button>
+                        <button
+                            onClick={() => deletePizza(pizza.id)}
+                            className={styles.deleteButton}
+                        >
+                            Delete
+                        </button>
                     </li>
                 ))}
             </ul>
-
-            <button
-                onClick={saveAllPizzas}
-                className={styles.saveButton}
-                disabled={loading || unsavedPizzas.length === 0}
-            >
-                {loading ? "Saving..." : "Save All"}
-            </button>
         </div>
     );
 }
