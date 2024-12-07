@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
 
@@ -10,21 +9,23 @@ export default function Home() {
     const [newPizzaName, setNewPizzaName] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Fetch pizzas from Supabase
+    // Fetch pizzas from API
     useEffect(() => {
         const fetchPizzas = async () => {
-            const { data, error } = await supabase.from("pizzas").select();
-            if (error) {
+            try {
+                const response = await fetch("/api/pizzas");
+                if (!response.ok) throw new Error("Failed to fetch pizzas");
+                const data = await response.json();
+                setPizzas(data || []);
+            } catch (error) {
                 console.error("Error fetching pizzas:", error.message);
-            } else {
-                setPizzas(data);
             }
         };
 
         fetchPizzas();
     }, []);
 
-    // Add a new pizza directly to Supabase
+    // Add a new pizzas
     const addPizza = async () => {
         if (!newPizzaName.trim()) {
             alert("Pizza name cannot be empty!");
@@ -38,30 +39,34 @@ export default function Home() {
 
         setLoading(true);
 
-        const { data, error } = await supabase
-            .from("pizzas")
-            .insert({ name: newPizzaName })
-            .select(); // Fetch inserted data immediately
+        try {
+            const response = await fetch("/api/pizzas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newPizzaName }),
+            });
 
-        if (error) {
-            console.error("Error adding pizza:", error.message);
-            alert("Failed to add pizza. Please try again.");
-        } else if (data) {
-            setPizzas([...pizzas, ...data]); // Add the new pizza to the list
+            if (!response.ok) throw new Error("Failed to add pizzas");
+            const newPizza = await response.json();
+            setPizzas([...pizzas, ...newPizza]);
             setNewPizzaName("");
+        } catch (error) {
+            console.error("Error adding pizzas:", error.message);
+            alert("Failed to add pizzas. Please try again.");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
-    // Delete a pizza
+    // Delete a pizzas
     const deletePizza = async (id) => {
-        const { error } = await supabase.from("pizzas").delete().eq("id", id);
-        if (error) {
-            console.error("Error deleting pizza:", error.message);
-            alert("Failed to delete pizza. Please try again.");
-        } else {
+        try {
+            const response = await fetch(`/api/pizzas/${id}`, { method: "DELETE" });
+            if (!response.ok) throw new Error("Failed to delete pizzas");
             setPizzas(pizzas.filter((pizza) => pizza.id !== id));
+        } catch (error) {
+            console.error("Error deleting pizzas:", error.message);
+            alert("Failed to delete pizzas. Please try again.");
         }
     };
 

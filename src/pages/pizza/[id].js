@@ -20,7 +20,7 @@ export default function PizzaPage() {
     const [selectedToppings, setSelectedToppings] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Fetch pizza name and toppings from Supabase
+    // Fetch pizzas name and toppings from Supabase
     useEffect(() => {
         const fetchPizzaDetails = async () => {
             if (!id) return;
@@ -32,7 +32,7 @@ export default function PizzaPage() {
                 .single();
 
             if (pizzaError) {
-                console.error("Error fetching pizza:", pizzaError.message);
+                console.error("Error fetching pizzas:", pizzaError.message);
                 return;
             }
             setPizzaName(pizza.name);
