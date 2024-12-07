@@ -5,67 +5,69 @@
 
 .addPizzaContainer {
   display: flex;
-  align-items: center;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
 .input {
-  margin-right: 10px;
+  flex: 1;
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  flex: 1;
+  border-radius: 4px;
 }
 
 .addButton {
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: #0070f3;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.addButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .pizzaList {
   list-style: none;
   padding: 0;
-  margin: 20px 0;
 }
 
 .pizzaItem {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #eee;
+}
+
+.pizzaName {
+  font-weight: bold;
+  flex: 1;
+}
+
+.pizzaActions {
+  display: flex;
+  gap: 10px;
+}
+
+.manageButton,
+.deleteButton {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .manageButton {
-  margin-left: 10px;
-  padding: 5px 10px;
-  background-color: #007bff;
+  background-color: #0070f3;
   color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
 }
 
 .deleteButton {
-  margin-left: 10px;
-  padding: 5px 10px;
-  background-color: #dc3545;
+  background-color: #ff4d4d;
   color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.saveButton {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }

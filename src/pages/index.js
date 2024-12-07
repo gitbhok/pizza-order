@@ -85,19 +85,21 @@ export default function Home() {
             <ul className={styles.pizzaList}>
                 {pizzas.map((pizza) => (
                     <li key={pizza.id} className={styles.pizzaItem}>
-                        <span>{pizza.name}</span>
-                        <button
-                            onClick={() => router.push(`/pizza/${pizza.id}`)}
-                            className={styles.manageButton}
-                        >
-                            Manage
-                        </button>
-                        <button
-                            onClick={() => deletePizza(pizza.id)}
-                            className={styles.deleteButton}
-                        >
-                            Delete
-                        </button>
+                        <span className={styles.pizzaName}>{pizza.name}</span>
+                        <div className={styles.pizzaActions}>
+                            <button
+                                onClick={() => router.push(`/pizza/${pizza.id}`)}
+                                className={styles.manageButton}
+                            >
+                                Manage
+                            </button>
+                            <button
+                                onClick={() => deletePizza(pizza.id)}
+                                className={styles.deleteButton}
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>
