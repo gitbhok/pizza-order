@@ -10,33 +10,34 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: "Invalid toppings format" });
         }
 
-        // Delete existing toppings
-        const { error: deleteError } = await supabase
-            .from("pizza_toppings")
-            .delete()
-            .eq("pizza_id", id);
+        try {
+            // Delete existing toppings
+            const { error: deleteError } = await supabase
+                .from("pizza_toppings")
+                .delete()
+                .eq("pizza_id", id);
 
-        if (deleteError) {
-            return res.status(500).json({ error: deleteError.message });
+            if (deleteError) throw deleteError;
+
+            // Insert new toppings
+            const { error: insertError } = await supabase
+                .from("pizza_toppings")
+                .insert(
+                    selectedToppings.map((topping) => ({
+                        pizza_id: id,
+                        topping,
+                    }))
+                );
+
+            if (insertError) throw insertError;
+
+            res.status(200).json({ message: "Toppings updated successfully" });
+        } catch (error) {
+            console.error("Error updating toppings:", error.message);
+            res.status(500).json({ error: error.message });
         }
-
-        // Insert new toppings
-        const { error: insertError } = await supabase
-            .from("pizza_toppings")
-            .insert(
-                selectedToppings.map((topping) => ({
-                    pizza_id: id,
-                    topping,
-                }))
-            );
-
-        if (insertError) {
-            return res.status(500).json({ error: insertError.message });
-        }
-
-        return res.status(200).json({ message: "Toppings updated successfully" });
+    } else {
+        res.setHeader("Allow", ["POST"]);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-
-    res.setHeader("Allow", ["POST"]);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
 }
