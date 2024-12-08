@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import styles from "../../styles/Pizza.module.css";
 
 export default function PizzaPage() {
@@ -20,33 +19,21 @@ export default function PizzaPage() {
     const [selectedToppings, setSelectedToppings] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Fetch pizzas name and toppings from Supabase
+    // Fetch pizza details
     useEffect(() => {
         const fetchPizzaDetails = async () => {
             if (!id) return;
 
-            const { data: pizza, error: pizzaError } = await supabase
-                .from("pizzas")
-                .select("name")
-                .eq("id", id)
-                .single();
+            try {
+                const response = await fetch(`/api/pizzas/${id}`);
+                if (!response.ok) throw new Error("Failed to fetch pizza details");
 
-            if (pizzaError) {
-                console.error("Error fetching pizzas:", pizzaError.message);
-                return;
+                const data = await response.json();
+                setPizzaName(data.pizzaName);
+                setSelectedToppings(data.selectedToppings);
+            } catch (error) {
+                console.error("Error fetching pizza details:", error.message);
             }
-            setPizzaName(pizza.name);
-
-            const { data: toppings, error: toppingsError } = await supabase
-                .from("pizza_toppings")
-                .select("topping")
-                .eq("pizza_id", id);
-
-            if (toppingsError) {
-                console.error("Error fetching toppings:", toppingsError.message);
-                return;
-            }
-            setSelectedToppings(toppings.map((item) => item.topping));
         };
 
         fetchPizzaDetails();
@@ -66,22 +53,23 @@ export default function PizzaPage() {
         if (!id) return;
 
         setLoading(true);
-        await supabase.from("pizza_toppings").delete().eq("pizza_id", id);
 
-        const { error } = await supabase.from("pizza_toppings").insert(
-            selectedToppings.map((topping) => ({
-                pizza_id: id,
-                topping,
-            }))
-        );
+        try {
+            const response = await fetch(`/api/pizzas/${id}/toppings`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ selectedToppings }),
+            });
 
-        if (error) {
-            console.error("Error saving toppings:", error.message);
-        } else {
+            if (!response.ok) throw new Error("Failed to save toppings");
+
             alert("Toppings saved successfully!");
+        } catch (error) {
+            console.error("Error saving toppings:", error.message);
+            alert("Failed to save toppings. Please try again.");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (
