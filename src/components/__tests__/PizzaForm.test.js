@@ -1,11 +1,20 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import {render, screen, fireEvent, waitFor} from "@testing-library/react";
 import PizzaForm from "../PizzaForm";
+import '@testing-library/jest-dom';
 
 describe("PizzaForm", () => {
-    it("renders the form elements correctly", () => {
-        render(<PizzaForm onAddPizza={() => {}} loading={false} />);
-        expect(screen.getByPlaceholderText("Pizza Name")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /Add Pizza/i })).toBeInTheDocument();
+    it("calls onAddPizza with the pizza name when the form is submitted", async () => {
+        const onAddPizzaMock = jest.fn();
+        render(<PizzaForm onAddPizza={onAddPizzaMock} loading={false} />);
+
+        fireEvent.change(screen.getByPlaceholderText("Pizza Name"), {
+            target: { value: "Test Pizza" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: /Add Pizza/i }));
+
+        await waitFor(() =>
+            expect(onAddPizzaMock).toHaveBeenCalledWith("Test Pizza")
+        );
     });
 
     it("calls onAddPizza with the pizza name when the form is submitted", async () => {
@@ -32,10 +41,16 @@ describe("PizzaForm", () => {
         expect(onAddPizza).not.toHaveBeenCalled();
     });
 
-    it("disables the button while loading", () => {
+    it("disables the button while loading", async () => {
         render(<PizzaForm onAddPizza={() => {}} loading={true} />);
 
-        expect(screen.getByRole("button", { name: /Adding.../i })).toBeDisabled();
+        const addButton = screen.getByRole("button", { name: /Adding\.\.\./i });
+
+        expect(addButton).toBeDisabled();
+
+        await waitFor(() => {
+            expect(screen.getByText("Adding...")).toBeInTheDocument(); //checks for the text change in the button
+        });
     });
 
     it("clears the input field after adding a pizza", () => {

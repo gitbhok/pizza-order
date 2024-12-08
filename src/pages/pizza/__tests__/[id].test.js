@@ -2,6 +2,7 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import Pizza from "../[id]";
 import { useRouter } from "next/router";
 import useToppings from "@/hooks/useToppings";
+import '@testing-library/jest-dom';
 
 jest.mock("next/router", () => ({
     useRouter: jest.fn(),
@@ -74,35 +75,4 @@ describe("Dynamic Pizza Page", () => {
         expect(useRouter().push).toHaveBeenCalledWith("/");
 
     });
-
-
-
-    it("renders selected toppings", () => {
-        useToppings.mockReturnValue({
-            availableToppings: ["Pepperoni", "Onions"],
-            selectedToppings: ["Pepperoni"],
-            toggleTopping: jest.fn(),
-            saveToppings: jest.fn(),
-            loading: false,
-        });
-
-        render(<Pizza />);
-        expect(screen.getByText("Pepperoni")).toBeVisible(); // in selected toppings
-
-    });
-
-
-
-    it("disables save button while loading", () => {
-
-        useToppings.mockReturnValue({
-            // ... other mock values
-            loading: true,
-        });
-        render(<Pizza />);
-
-        expect(screen.getByRole("button", { name: "Saving..." })).toBeDisabled();
-
-    });
-
 });

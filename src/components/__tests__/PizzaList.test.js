@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import PizzaList from "../PizzaList";
+import '@testing-library/jest-dom';
 
 describe("PizzaList", () => {
     const pizzas = [
@@ -9,8 +10,9 @@ describe("PizzaList", () => {
     const onManage = jest.fn();
     const onDelete = jest.fn();
 
-    it("renders the pizza list correctly", () => {
+    it("renders the pizza list correctly when pizzas are present", () => {
         render(<PizzaList pizzas={pizzas} onManage={onManage} onDelete={onDelete} />);
+
         expect(screen.getByText("Pepperoni")).toBeInTheDocument();
         expect(screen.getByText("Hawaiian")).toBeInTheDocument();
     });

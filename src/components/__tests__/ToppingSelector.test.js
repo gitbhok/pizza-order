@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import ToppingSelector from "../ToppingSelector";
+import '@testing-library/jest-dom';
 
 describe("ToppingSelector", () => {
     const toppings = ["Pepperoni", "Mushrooms", "Onions"];

@@ -2,6 +2,7 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import Home from "../index";
 import { useRouter } from "next/router";
 import usePizzas from "@/hooks/usePizzas";
+import '@testing-library/jest-dom';
 
 // Mock useRouter and usePizzas
 jest.mock("next/router", () => ({

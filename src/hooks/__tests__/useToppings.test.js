@@ -1,5 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import useToppings from "../useToppings";
+import '@testing-library/jest-dom';
 
 describe("useToppings", () => {
     const pizzaId = 1;
@@ -11,24 +12,42 @@ describe("useToppings", () => {
                 json: () => Promise.resolve({ selectedToppings: ["Pepperoni"] }),
             })
         );
+
+        global.alert = jest.fn();
+
+        // Mock console.error to prevent it from cluttering the test output
+        jest.spyOn(console, "error").mockImplementation(() => {});
     });
 
     afterEach(() => {
-        global.fetch.mockClear(); // Or jest.clearAllMocks() if mocking multiple things
+        jest.clearAllMocks();
+        // Restore console.error after each test
+        console.error.mockRestore();
     });
 
     it("fetches toppings when pizzaId is provided", async () => {
-        renderHook(() => useToppings(pizzaId));
+        await act(async () => {
+            renderHook(() => useToppings(pizzaId));
+        });
         expect(global.fetch).toHaveBeenCalledWith(`/api/pizzas/${pizzaId}`);
     });
 
     it("does not fetch toppings when pizzaId is not present", async () => {
-        renderHook(() => useToppings(undefined));
+        await act(async () => {
+            renderHook(() => useToppings(undefined));
+        });
         expect(global.fetch).not.toHaveBeenCalled();
     });
 
-    it("toggles a topping", () => {
-        const { result } = renderHook(() => useToppings(pizzaId));
+    it("toggles a topping", async () => {
+        const { result } = await act(async () =>
+            renderHook(() => useToppings(pizzaId))
+        );
+
+        // Wait for initial fetch to complete
+        await act(async () => {
+            await Promise.resolve();
+        });
 
         act(() => {
             result.current.toggleTopping("Mushrooms");
@@ -39,11 +58,18 @@ describe("useToppings", () => {
             result.current.toggleTopping("Pepperoni");
         });
         expect(result.current.selectedToppings).toEqual(["Mushrooms"]);
-
     });
 
     it("saves toppings", async () => {
-        const { result } = renderHook(() => useToppings(pizzaId));
+        const { result } = await act(async () =>
+            renderHook(() => useToppings(pizzaId))
+        );
+
+        // Wait for initial fetch to complete
+        await act(async () => {
+            await Promise.resolve();
+        });
+
         act(() => {
             result.current.toggleTopping("Mushrooms");
         });
@@ -52,53 +78,61 @@ describe("useToppings", () => {
             await result.current.saveToppings();
         });
 
-        expect(global.fetch).toHaveBeenCalledWith(`/api/pizzas/${pizzaId}/toppings`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ selectedToppings: ["Pepperoni", "Mushrooms"] }),
-        });
+        expect(global.fetch).toHaveBeenCalledWith(
+            `/api/pizzas/${pizzaId}/toppings`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ selectedToppings: ["Pepperoni", "Mushrooms"] }),
+            }
+        );
     });
 
     it("handles topping fetch errors", async () => {
-
         global.fetch = jest.fn(() =>
             Promise.resolve({
                 ok: false,
-                json: () => Promise.reject(new Error('API Error')),
-                status: 500, // Add a status code
-                statusText: 'Internal Server Error' // Add a status text
+                status: 500,
+                statusText: "Internal Server Error",
             })
         );
 
-        const { result } = renderHook(() => useToppings(pizzaId));
+        const { result } = await act(async () =>
+            renderHook(() => useToppings(pizzaId))
+        );
 
         // Wait for the effect to resolve (or reject)
         await act(async () => {
-            await Promise.resolve(); // or await waitForNextUpdate(); in newer versions of react-testing-library
+            await Promise.resolve();
         });
 
         expect(result.current.selectedToppings).toEqual([]);
     });
 
     it("sets loading state correctly", async () => {
+        const { result } = renderHook(() => useToppings(pizzaId));
 
-        const { result, waitForNextUpdate } = renderHook(() => useToppings(pizzaId));
-        expect(result.current.loading).toBe(false); // Initial loading state
-
-        act(async () => {
-            result.current.saveToppings(); // Simulate save action
+        // Wait for initial fetch to complete
+        await act(async () => {
+            await Promise.resolve();
         });
 
-        expect(result.current.loading).toBe(true); // Loading state during save
+        expect(result.current.loading).toBe(false);
 
-        await waitForNextUpdate();
-        expect(result.current.loading).toBe(false); // Loading state after save
+        // Simulate save action
+        act(() => {
+            result.current.saveToppings();
+        });
 
+        expect(result.current.loading).toBe(true);
+
+        // Wait for save to complete
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        expect(result.current.loading).toBe(false);
     });
-
-
-
-
 });
