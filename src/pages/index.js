@@ -1,43 +1,22 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import PizzaList from "@/components/PizzaList";
+import usePizzas from "@/hooks/usePizzas";
 import PizzaForm from "@/components/PizzaForm";
-import { fetchPizzas, addPizza, deletePizza } from "@/lib/apiUtils";
-import styles from "../styles/Home.module.css";
+import PizzaList from "@/components/PizzaList";
+import styles from "@/styles/Home.module.css";
+import { useRouter } from "next/router";
 
 export default function Home() {
     const router = useRouter();
-    const [pizzas, setPizzas] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        (async () => {
-            const data = await fetchPizzas();
-            setPizzas(data);
-        })();
-    }, []);
-
-    const handleAddPizza = async (name) => {
-        setLoading(true);
-        const newPizza = await addPizza(name);
-        if (newPizza) setPizzas((prev) => [...prev, ...newPizza]);
-        setLoading(false);
-    };
-
-    const handleDeletePizza = async (id) => {
-        if (await deletePizza(id)) {
-            setPizzas((prev) => prev.filter((pizza) => pizza.id !== id));
-        }
-    };
+    const { pizzas, loading, addNewPizza, removePizza } = usePizzas();
 
     return (
         <div className={styles.container}>
             <h1>Manage Pizzas</h1>
-            <PizzaForm onAddPizza={handleAddPizza} loading={loading} />
+            <PizzaForm onAddPizza={addNewPizza} loading={loading} />
+            <h2>Pizza List</h2>
             <PizzaList
                 pizzas={pizzas}
                 onManage={(id) => router.push(`/pizza/${id}`)}
-                onDelete={handleDeletePizza}
+                onDelete={removePizza}
             />
         </div>
     );
