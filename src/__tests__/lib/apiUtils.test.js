@@ -1,4 +1,4 @@
-import { fetchPizzas, addPizza, deletePizza } from "../apiUtils";
+import { fetchPizzas, addPizza, deletePizza } from "../../lib/apiUtils";
 
 describe("API Utils", () => {
     beforeEach(() => {

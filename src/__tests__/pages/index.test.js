@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
-import Home from "../index";
+import { render, screen, fireEvent } from "@testing-library/react";
+import Home from "../../pages";
 import { useRouter } from "next/router";
 import usePizzas from "@/hooks/usePizzas";
 import '@testing-library/jest-dom';
@@ -44,9 +44,5 @@ describe("Home Page", () => {
 
         expect(useRouter().push).toHaveBeenCalledWith("/pizza/1");
     });
-
-    // ... more tests to come
-
-
 
 });

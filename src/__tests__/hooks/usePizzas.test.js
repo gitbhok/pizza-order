@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import usePizzas from "../usePizzas";
+import usePizzas from "../../hooks/usePizzas";
 
 // Mock the apiUtils functions
 const mockFetchPizzas = jest.fn();

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import Pizza from "../[id]";
+import Pizza from "../../pages/pizza/[id]";
 import { useRouter } from "next/router";
 import useToppings from "@/hooks/useToppings";
 import '@testing-library/jest-dom';
@@ -8,7 +8,7 @@ jest.mock("next/router", () => ({
     useRouter: jest.fn(),
 }));
 
-jest.mock("../../../hooks/useToppings");
+jest.mock("../../hooks/useToppings");
 
 describe("Dynamic Pizza Page", () => {
 

@@ -1,5 +1,5 @@
 import {render, screen, fireEvent, waitFor} from "@testing-library/react";
-import PizzaForm from "../PizzaForm";
+import PizzaForm from "../../components/PizzaForm";
 import '@testing-library/jest-dom';
 
 describe("PizzaForm", () => {

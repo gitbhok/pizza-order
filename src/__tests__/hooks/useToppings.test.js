@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import useToppings from "../useToppings";
+import useToppings from "../../hooks/useToppings";
 import '@testing-library/jest-dom';
 
 describe("useToppings", () => {
