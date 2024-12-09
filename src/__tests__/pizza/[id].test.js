@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import Pizza from "../../pages/pizza/[id]";
+import Pizza from "@/pages/pizza/[id]";
 import { useRouter } from "next/router";
 import useToppings from "@/hooks/useToppings";
 import '@testing-library/jest-dom';

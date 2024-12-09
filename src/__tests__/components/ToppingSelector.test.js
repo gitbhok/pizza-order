@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import ToppingSelector from "../../components/ToppingSelector";
+import ToppingSelector from "@/components/ToppingSelector";
 import '@testing-library/jest-dom';
 
 describe("ToppingSelector", () => {

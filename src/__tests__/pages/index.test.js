@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import Home from "../../pages";
+import Home from "@/pages";
 import { useRouter } from "next/router";
 import usePizzas from "@/hooks/usePizzas";
 import '@testing-library/jest-dom';

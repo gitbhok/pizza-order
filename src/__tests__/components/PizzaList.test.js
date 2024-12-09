@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import PizzaList from "../../components/PizzaList";
+import PizzaList from "@/components/PizzaList";
 import '@testing-library/jest-dom';
 
 describe("PizzaList", () => {
