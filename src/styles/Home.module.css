@@ -1,0 +1,91 @@
+.container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.addPizzaContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.addButton {
+  padding: 10px 20px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.addButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pizzaList {
+  list-style: none;
+  padding: 0;
+}
+
+.pizzaItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.pizzaName {
+  font-weight: bold;
+  flex: 1;
+}
+
+.pizzaActions {
+  display: flex;
+  gap: 10px;
+}
+
+.manageButton,
+.deleteButton {
+  padding: 5px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.manageButton {
+  background-color: #0070f3;
+  color: white;
+}
+
+.deleteButton {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.pizzaInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.pizzaToppingsList {
+  list-style-type: disc; /* Add bullet points */
+  margin-top: 5px; /* Add some space between pizza name and toppings */
+  margin-left: 20px; /* Indent the toppings list */
+  font-size: 0.9em; /* Slightly smaller font size for toppings */
+  color: #555; /* Lighter color for toppings */
+}
+
+.pizzaTopping {
+  margin-bottom: 3px; /* Add space between toppings */
+}
