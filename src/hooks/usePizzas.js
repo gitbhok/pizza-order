@@ -15,10 +15,27 @@ export default function usePizzas() {
     }, []);
 
     const addNewPizza = async (name) => {
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            alert("Pizza name cannot be empty!");
+            return;
+        }
+
+        if (pizzas.some(pizza => pizza.name.toLowerCase() === trimmedName.toLowerCase())) {
+            alert("A pizza with that name already exists!");
+            return;
+        }
+
         setLoading(true);
-        const newPizza = await addPizza(name);
-        if (newPizza) setPizzas((prev) => [...prev, ...newPizza]);
-        setLoading(false);
+        try {
+            const newPizza = await addPizza(trimmedName);
+            if (newPizza) {
+                setPizzas((prev) => [...prev, ...newPizza]);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const removePizza = async (id) => {
