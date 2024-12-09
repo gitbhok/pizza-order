@@ -1,4 +1,3 @@
-// /src/components/PizzaList.js
 import styles from "@/styles/Home.module.css";
 
 export default function PizzaList({ pizzas, onManage, onDelete }) {

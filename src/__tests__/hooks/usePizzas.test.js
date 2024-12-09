@@ -1,5 +1,3 @@
-// src/__tests__/hooks/usePizzas.test.js
-
 import { renderHook, act } from "@testing-library/react";
 import usePizzas from "@/hooks/usePizzas";
 

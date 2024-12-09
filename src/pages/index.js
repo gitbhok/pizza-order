@@ -1,4 +1,3 @@
-// /src/pages/index.js
 import usePizzas from "@/hooks/usePizzas";
 import PizzaForm from "@/components/PizzaForm";
 import PizzaList from "@/components/PizzaList";
