@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .endpoint {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .endpoint-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .method {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 10px;
+            color: #fff;
+        }
+        .get {
+            background-color: #61affe; /* Blue */
+        }
+        .post {
+            background-color: #49cc90; /* Green */
+        }
+        .delete {
+            background-color: #f93e3e; /* Red */
+        }
+        .path {
+            font-family: monospace;
+            color: #333;
+        }
+        .description {
+            margin-bottom: 15px;
+        }
+        .parameters, .request-body, .responses {
+            margin-top: 15px;
+        }
+        .parameters-table, .request-body-table, .responses-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .parameters-table th, .request-body-table th, .responses-table th,
+        .parameters-table td, .request-body-table td, .responses-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .parameters-table th, .request-body-table th, .responses-table th {
+            background-color: #f0f0f0;
+        }
+        .code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pizza API Documentation</h1>
+
+    <div class="section">
+        <h2>Pizzas</h2>
+
+        <div class="endpoint">
+            <div class="endpoint-title">
+                <span class="method get">GET</span>
+                <span class="path">/api/pizzas</span>
+            </div>
+            <div class="description">
+                Retrieves a list of all pizzas.
+            </div>
+            <div class="responses">
+                <h3>Responses</h3>
+                <table class="responses-table">
+                    <thead>
+                        <tr>
+                            <th>Status Code</th>
+                            <th>Description</th>
+                            <th>Schema</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">200 OK</code></td>
+                            <td>Successful operation</td>
+                            <td><code class="code">Array[Pizza]</code></td>
+                        </tr>
+                        <tr>
+                            <td><code class="code">500 Internal Server Error</code></td>
+                            <td>Error fetching pizzas</td>
+                            <td><code class="code">Error</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <div class="endpoint-title">
+                <span class="method post">POST</span>
+                <span class="path">/api/pizzas</span>
+            </div>
+            <div class="description">
+                Creates a new pizza.
+            </div>
+            <div class="request-body">
+                <h3>Request Body</h3>
+                <table class="request-body-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">name</code></td>
+                            <td><code class="code">string</code></td>
+                            <td>Name of the pizza (required)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="responses">
+                <h3>Responses</h3>
+                <table class="responses-table">
+                    <thead>
+                        <tr>
+                            <th>Status Code</th>
+                            <th>Description</th>
+                            <th>Schema</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">201 Created</code></td>
+                            <td>Pizza created successfully</td>
+                            <td><code class="code">Pizza</code></td>
+                        </tr>
+                        <tr>
+                            <td><code class="code">400 Bad Request</code></td>
+                            <td>Invalid pizza name</td>
+                            <td><code class="code">Error</code></td>
+                        </tr>
+                        <tr>
+                            <td><code class="code">500 Internal Server Error</code></td>
+                            <td>Error adding pizza</td>
+                            <td><code class="code">Error</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <div class="endpoint-title">
+                <span class="method get">GET</span>
+                <span class="path">/api/pizzas/{id}</span>
+            </div>
+            <div class="description">
+                Retrieves a specific pizza by ID.
+            </div>
+            <div class="parameters">
+                <h3>Parameters</h3>
+                <table class="parameters-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>In</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">id</code></td>
+                            <td><code class="code">integer</code></td>
+                            <td>ID of the pizza to retrieve</td>
+                            <td><code class="code">path</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="responses">
+                <h3>Responses</h3>
+                <table class="responses-table">
+                    <thead>
+                        <tr>
+                            <th>Status Code</th>
+                            <th>Description</th>
+                            <th>Schema</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">200 OK</code></td>
+                            <td>Successful operation</td>
+                            <td><code class="code">PizzaDetails</code></td>
+                        </tr>
+                        <tr>
+                            <td><code class="code">500 Internal Server Error</code></td>
+                            <td>Error fetching pizza</td>
+                            <td><code class="code">Error</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <div class="endpoint-title">
+                <span class="method delete">DELETE</span>
+                <span class="path">/api/pizzas/{id}</span>
+            </div>
+            <div class="description">
+                Deletes a specific pizza by ID.
+            </div>
+            <div class="parameters">
+                <h3>Parameters</h3>
+                <table class="parameters-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>In</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">id</code></td>
+                            <td><code class="code">integer</code></td>
+                            <td>ID of the pizza to delete</td>
+                            <td><code class="code">path</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="responses">
+                <h3>Responses</h3>
+                <table class="responses-table">
+                    <thead>
+                        <tr>
+                            <th>Status Code</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">200 OK</code></td>
+                            <td>Pizza deleted successfully</td>
+                        </tr>
+                        <tr>
+                            <td><code class="code">500 Internal Server Error</code></td>
+                            <td>Error deleting pizza</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Pizza Toppings</h2>
+
+        <div class="endpoint">
+            <div class="endpoint-title">
+                <span class="method post">POST</span>
+                <span class="path">/api/pizzas/{id}/toppings</span>
+            </div>
+            <div class="description">
+                Updates the toppings for a specific pizza.
+            </div>
+            <div class="parameters">
+                <h3>Parameters</h3>
+                <table class="parameters-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>In</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">id</code></td>
+                            <td><code class="code">integer</code></td>
+                            <td>ID of the pizza to update toppings for</td>
+                            <td><code class="code">path</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="request-body">
+                <h3>Request Body</h3>
+                <table class="request-body-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">selectedToppings</code></td>
+                            <td><code class="code">Array[string]</code></td>
+                            <td>List of toppings to add to the pizza</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="responses">
+                <h3>Responses</h3>
+                <table class="responses-table">
+                    <thead>
+                        <tr>
+                            <th>Status Code</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="code">200 OK</code></td>
+                            <td>Toppings updated successfully</td>
+                        </tr>
+                        <tr>
+                            <td><code class="code">400 Bad Request</code></td>
+                            <td>Invalid toppings format</td>
+                        </tr>
+                        <tr>
+                            <td><code class="code">500 Internal Server Error</code></td>
+                            <td>Error updating toppings</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Schemas</h2>
+        <h3>Pizza</h3>
+        <table class="parameters-table">
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code class="code">id</code></td>
+                    <td><code class="code">integer</code></td>
+                    <td>Unique identifier for the pizza</td>
+                </tr>
+                <tr>
+                    <td><code class="code">name</code></td>
+                    <td><code class="code">string</code></td>
+                    <td>Name of the pizza</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>PizzaDetails</h3>
+        <table class="parameters-table">
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code class="code">pizzaName</code></td>
+                    <td><code class="code">string</code></td>
+                    <td>Name of the pizza</td>
+                </tr>
+                <tr>
+                    <td><code class="code">selectedToppings</code></td>
+                    <td><code class="code">Array[string]</code></td>
+                    <td>List of selected toppings for the pizza</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Error</h3>
+        <table class="parameters-table">
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code class="code">error</code></td>
+                    <td><code class="code">string</code></td>
+                    <td>Error message</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

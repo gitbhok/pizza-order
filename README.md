@@ -1,40 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+🍕 Pizza App
+Pizza App is a feature-rich Next.js application for managing pizzas and their toppings. Users can add, delete, and customize pizzas with a variety of toppings. This application is built using Next.js, React, and Supabase, ensuring scalability, performance, and seamless database interactions.
 
-## Getting Started
+📖 Overview
+This project demonstrates a robust architecture using modern web development practices. Key technical choices include:
 
-First, run the development server:
+Next.js: Leveraged for its ability to quickly deploy full-stack applications. Its built-in support for API routes simplifies backend development, and its standardized approach to frontend development accelerates the development process.
+React: Provides a component-based architecture for building reusable and maintainable user interfaces.
+Supabase: Offers an easy-to-use backend solution with a PostgreSQL database and API endpoints.
+Testing Tools: Jest and React Testing Library ensure a reliable and maintainable codebase.
 
-```bash
+🌐 Demo
+You can explore the live application here: Pizza App Demo
+
+🚀 Features
+Add and manage pizzas.
+Customize pizzas with toppings.
+View and delete existing pizzas.
+API-backed by Supabase for seamless data management.
+
+🛠️ Getting Started
+Follow these instructions to set up the project on your local machine for development and testing.
+
+## Prerequisites
+Supabase Account: Sign up at Supabase.
+
+Project Setup
+
+Install dependencies:
+npm install
+
+## Set up environment variables:
+Create a .env.local file in the root directory.
+
+Add the following:
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+## Supabase Setup
+Log in to your Supabase dashboard and create a new project.
+
+Under the API section, copy your Project URL and Anon Key.
+
+## Use the SQL editor in Supabase to create tables:
+
+sql
+Copy code
+
+CREATE TABLE pizzas (
+id SERIAL PRIMARY KEY,
+created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+name TEXT
+);
+
+CREATE TABLE pizza_toppings (
+id SERIAL PRIMARY KEY,
+created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+pizza_id INTEGER REFERENCES pizzas(id),
+topping TEXT
+);
+
+## Start the Development Server
+Run the server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open your browser and navigate to http://localhost:3000.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🧪 Running Tests
+This project includes an automated test suite to ensure code quality.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+Run tests using:
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+npm test
+Test coverage is provided using Jest. Additional setup for more in-depth testing can be configured in the jest.config.js file.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+📜 API Documentation
+This project includes an API reference document, Pizza-API-Docs.htm, which provides detailed information on the available API endpoints, request parameters, and responses. The documentation serves as a guide for understanding the Pizza API functionality and usage, similar to Swagger-style documentation. Key features include:
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Endpoint descriptions: Information about each API route, such as /api/pizzas and /api/pizzas/{id}.
+Request and response formats: Detailed examples for each method (GET, POST, DELETE) with schemas and status codes.
+Interactive layout: Organized sections for pizzas, toppings, and schema definitions.
 
-## Learn More
+🏗️ Deployment
+This application can be easily deployed on Vercel or any similar platform.
 
-To learn more about Next.js, take a look at the following resources:
+Create a Vercel Account: Sign up if you don't already have one.
+Import the Project: Link the repository directly to your Vercel account.
+Set Environment Variables: Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in the project settings.
+Deploy: Vercel automatically builds and deploys the application.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+📂 Project Structure
+src/components/: Reusable React components.
+src/hooks/: Custom hooks for application logic.
+src/lib/: Utilities and Supabase client setup.
+src/pages/: Application pages and API routes.
+src/styles/: CSS modules and global styles.
+src/__tests__/: Unit and integration tests.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+✨ Thought Process
+Rapid Development and Deployment: Next.js was chosen for its ability to quickly deploy full-stack applications. Its built-in support for API routes simplifies backend development, and its standardized approach to frontend development accelerates the development process.
+Integrated Testing: Next.js natively supports Jest, making it an excellent choice for maintaining code quality. React Testing Library complements this by focusing on testing user interactions and components in isolation.
+Scalable Backend: Supabase was selected for its seamless integration with modern web applications, providing a scalable and feature-rich backend.
